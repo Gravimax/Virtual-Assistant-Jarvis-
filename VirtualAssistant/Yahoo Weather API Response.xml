@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<query xmlns:yahoo="http://www.yahooapis.com/v1/base.rng"
+    yahoo:count="1" yahoo:created="2016-12-10T02:03:04Z" yahoo:lang="en-US">
+    <results>
+        <channel>
+            <yweather:units
+                xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                distance="mi" pressure="in" speed="mph" temperature="F"/>
+            <title>Yahoo! Weather - Nome, AK, US</title>
+            <link>http://us.rd.yahoo.com/dailynews/rss/weather/Country__Country/*https://weather.yahoo.com/country/state/city-2460286/</link>
+            <description>Yahoo! Weather for Nome, AK, US</description>
+            <language>en-us</language>
+            <lastBuildDate>Fri, 09 Dec 2016 05:03 PM AKST</lastBuildDate>
+            <ttl>60</ttl>
+            <yweather:location
+                xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                city="Nome" country="United States" region=" AK"/>
+            <yweather:wind
+                xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                chill="-13" direction="45" speed="14"/>
+            <yweather:atmosphere
+                xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                humidity="54" pressure="1029.0" rising="0" visibility="16.1"/>
+            <yweather:astronomy
+                xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                sunrise="11:47 am" sunset="4:1 pm"/>
+            <image>
+                <title>Yahoo! Weather</title>
+                <width>142</width>
+                <height>18</height>
+                <link>http://weather.yahoo.com</link>
+                <url>http://l.yimg.com/a/i/brand/purplelogo//uh/us/news-wea.gif</url>
+            </image>
+            <item>
+                <title>Conditions for Nome, AK, US at 03:00 PM AKST</title>
+                <geo:lat xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#">64.499474</geo:lat>
+                <geo:long xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#">-165.405792</geo:long>
+                <link>http://us.rd.yahoo.com/dailynews/rss/weather/Country__Country/*https://weather.yahoo.com/country/state/city-2460286/</link>
+                <pubDate>Fri, 09 Dec 2016 03:00 PM AKST</pubDate>
+                <yweather:condition
+                    xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                    code="32" date="Fri, 09 Dec 2016 03:00 PM AKST"
+                    temp="1" text="Sunny"/>
+                <yweather:forecast
+                    xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                    code="32" date="09 Dec 2016" day="Fri" high="1"
+                    low="-10" text="Sunny"/>
+                <yweather:forecast
+                    xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                    code="32" date="10 Dec 2016" day="Sat" high="6"
+                    low="-3" text="Sunny"/>
+                <yweather:forecast
+                    xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                    code="30" date="11 Dec 2016" day="Sun" high="15"
+                    low="4" text="Partly Cloudy"/>
+                <yweather:forecast
+                    xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                    code="26" date="12 Dec 2016" day="Mon" high="23"
+                    low="16" text="Cloudy"/>
+                <yweather:forecast
+                    xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                    code="23" date="13 Dec 2016" day="Tue" high="29"
+                    low="20" text="Breezy"/>
+                <yweather:forecast
+                    xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                    code="23" date="14 Dec 2016" day="Wed" high="34"
+                    low="30" text="Breezy"/>
+                <yweather:forecast
+                    xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                    code="5" date="15 Dec 2016" day="Thu" high="36"
+                    low="32" text="Rain And Snow"/>
+                <yweather:forecast
+                    xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                    code="24" date="16 Dec 2016" day="Fri" high="36"
+                    low="30" text="Windy"/>
+                <yweather:forecast
+                    xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                    code="23" date="17 Dec 2016" day="Sat" high="30"
+                    low="28" text="Breezy"/>
+                <yweather:forecast
+                    xmlns:yweather="http://xml.weather.yahoo.com/ns/rss/1.0"
+                    code="28" date="18 Dec 2016" day="Sun" high="32"
+                    low="28" text="Mostly Cloudy"/>
+                <description>&lt;![CDATA[&lt;img src="http://l.yimg.com/a/i/us/we/52/32.gif"/&gt;
+&lt;BR /&gt;
+&lt;b&gt;Current Conditions:&lt;/b&gt;
+&lt;BR /&gt;Sunny
+&lt;BR /&gt;
+&lt;BR /&gt;
+&lt;b&gt;Forecast:&lt;/b&gt;
+&lt;BR /&gt; Fri - Sunny. High: 1Low: -10
+&lt;BR /&gt; Sat - Sunny. High: 6Low: -3
+&lt;BR /&gt; Sun - Partly Cloudy. High: 15Low: 4
+&lt;BR /&gt; Mon - Cloudy. High: 23Low: 16
+&lt;BR /&gt; Tue - Breezy. High: 29Low: 20
+&lt;BR /&gt;
+&lt;BR /&gt;
+&lt;a href="http://us.rd.yahoo.com/dailynews/rss/weather/Country__Country/*https://weather.yahoo.com/country/state/city-2460286/"&gt;Full Forecast at Yahoo! Weather&lt;/a&gt;
+&lt;BR /&gt;
+&lt;BR /&gt;
+(provided by &lt;a href="http://www.weather.com" &gt;The Weather Channel&lt;/a&gt;)
+&lt;BR /&gt;
+]]&gt;</description>
+                <guid isPermaLink="false"/>
+            </item>
+        </channel>
+    </results>
+</query>
