@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Speech.Recognition;
 using System.Speech.Synthesis;
-using System.Diagnostics;
+using VirtualAssistant.CommandProcessing;
+using VirtualAssistant.CommandProcessing.Parsers;
 using VirtualAssistant.Models;
-using VirtualAssistant.InternalCommands;
-using System.ComponentModel;
 
 namespace VirtualAssistant.ViewModels
 {
@@ -21,7 +19,8 @@ namespace VirtualAssistant.ViewModels
 
         SpeechSynthesizer speechSynthesizer = null;
 
-        List<CommandItem> commands = new List<CommandItem>();
+        List<ICommand> commandList = new List<ICommand>();
+        List<string> commandWords = new List<string>();
 
         string lastCommand = "";
 
@@ -37,6 +36,11 @@ namespace VirtualAssistant.ViewModels
         public ApplicationViewModel()
         {
             EditCommandsCommand = new DelegateCommand(EditCommands);
+
+            commandList.Add(new WeatherCommandParser());
+            commandList.Add(new DateTimeCommandParser());
+            commandList.Add(new OpenBrowserCommandParser());
+            commandList.Add(new CloseApplicationCommandParser());
         }
 
         #endregion
@@ -153,42 +157,15 @@ namespace VirtualAssistant.ViewModels
                 Choices texts = new Choices();
                 texts.Add(appConfig.AssistantName);
 
-                commands = Utilities.LoadCommands();
 
-                if (commands.Count == 0)
+                List<string> tempCommandWords = new List<string>();
+
+                foreach (var item in commandList)
                 {
-                    // It's new so create a default list
-                    commands.Add(new CommandItem { Commands = new List<string>() { "hello" }, Response = "Good day", AppendName = AppendNameType.Default });
-                    commands.Add(new CommandItem { Commands = new List<string>() { "how are you" }, Response = "I'm super, thanks for asking", AppendName = AppendNameType.No });
-                    commands.Add(new CommandItem { Commands = new List<string>() { "close assistant", "close virtual assistant" }, Response = "Closing", AppendName = AppendNameType.No, CommandType = VirtualCommandType.EventCommand });
-                    commands.Add(new CommandItem { Commands = new List<string>() { "open browser", "open chrome" }, Response = "", Target = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", AppendName = AppendNameType.No, CommandType = VirtualCommandType.ShellCommand });
-                    commands.Add(new CommandItem { Commands = new List<string>() { "open slash" }, Response = "", Target = "https://slashdot.org/", AppendName = AppendNameType.No, CommandType = VirtualCommandType.ShellCommand });
-                    commands.Add(new CommandItem { Commands = new List<string>() { "what day is it", "what time is it", "what is the time" }, CommandTarget = "VirtualAssistant.InternalCommands.GetDate", AppendName = AppendNameType.No, CommandType = VirtualCommandType.InternalCommand });
-                    commands.Add(new CommandItem { Commands = new List<string>() { "how's the weather",
-                        "what's the weather like",
-                        "what's it like outside",
-                        "what will tomorrow be like",
-                        "what's tomorrows forecast",
-                        "what's tomorrow like",
-                        "what's the temperature",
-                        "what's the temperature outside"}, CommandArgs = "2389166/dana point, ca/f", CommandTarget = "VirtualAssistant.InternalCommands.GetWeather", AppendName = AppendNameType.No,
-                        CommandType = VirtualCommandType.InternalCommand
-                    });
-
-                    Utilities.SaveCommands(commands);
+                    tempCommandWords.AddRange(item.CommandList);
                 }
 
-                foreach (var item in commands)
-                {
-                    // Add the text to the known choices of speech engine
-                    foreach (var command in item.Commands)
-                    {
-                        texts.Add(command);
-                    }
-                }
-
-                Grammar wordsList = new Grammar(new GrammarBuilder(texts));
-                speechRecognitionEngine.LoadGrammar(wordsList);
+                commandWords = tempCommandWords.Distinct().ToList(); // Get a unique list of command words
 
                 DictationGrammar dict = new DictationGrammar();
                 speechRecognitionEngine.LoadGrammar(dict);
@@ -225,57 +202,23 @@ namespace VirtualAssistant.ViewModels
             {
                 command = command.ToLower();
 
-                var cmd = commands.FirstOrDefault(x => x.Commands.Contains(command.ToLower()));
+                ICommand commandX = GetCommandToProcess(command);
 
-                if (cmd != null)
+                if (commandX is CloseApplicationCommandParser)
                 {
-                    OnConsoleWrite("Recognize command: " + command);
-
-                    if (cmd.IsShellCommand)
-                    {
-                        Process proc = new Process();
-                        proc.EnableRaisingEvents = false;
-                        proc.StartInfo.FileName = cmd.Target;
-                        if (cmd.CommandArgs != null)
-                        {
-                            proc.StartInfo.Arguments = cmd.CommandArgs;
-                        }
-
-                        proc.Start();
-                        lastCommand = command;
-
-                        return !string.IsNullOrEmpty(cmd.Response) ? cmd.Response + ((cmd.AppendName == AppendNameType.Yes || cmd.AppendName == AppendNameType.Default) ? " " + appConfig.GetName() : "") : null;
-                    }
-                    else if (cmd.IsInternalCommand)
-                    {
-                        lastCommand = command;
-                        Type t = Type.GetType(cmd.CommandTarget);
-                        var cmmd = (IInternalCommand)Activator.CreateInstance(t);
-                        ReturnResult result = cmmd.RunCommand(cmd, command);
-
-                        if (result.HasDisplay)
-                        {
-                            // display something here: html, text, etc.
-                        }
-
-                        return result.Response;
-                    }
-                    else if (cmd.IsEventCommand)
-                    {
-                        OnCloseApplication();
-                        return cmd.Response;
-                    }
-                    else
-                    {
-                        lastCommand = command;
-                        return cmd.Response + ((cmd.AppendName == AppendNameType.Yes || cmd.AppendName == AppendNameType.Default) ? " " + appConfig.GetName() : "");
-                    }
+                    OnCloseApplication();
+                    return string.Empty;
                 }
-                else
+
+                ICommandInstance instance = commandX.GetCommandInstance();
+                ReturnResult result = instance.RunCommand(command);
+
+                if (result.HasDisplay)
                 {
-                    OnConsoleWrite("Unnkown command: " + command, true);
-                    return null;
+                    // display something here: html, text, etc.?
                 }
+
+                return result.Response;
             }
             catch (Exception ex)
             {
@@ -283,6 +226,53 @@ namespace VirtualAssistant.ViewModels
                 OnConsoleWrite("Exception processing command: " + command, true);
                 lastCommand = command;
                 return "There was an error processing your command";
+            }
+        }
+
+
+        private string PreProcessText(string text)
+        {
+            return text;
+        }
+
+
+        private ICommand GetCommandToProcess(string command)
+        {
+            List<string> temp = new List<string>();
+
+            foreach (var item in commandWords)
+            {
+                if (command.Contains(item)) { temp.Add(item); }
+            }
+
+            if (temp.Count > 0)
+            {
+                List<ICommand> tempx = new List<ICommand>();
+                foreach (var item in commandList)
+                {
+                    if (temp.All(word => item.CommandList.Contains(word)))
+                    {
+                        tempx.Add(item);
+                    }
+                }
+
+                if (tempx.Count == 0)
+                {
+                    return new UnknownCommandParser("Unknown command");
+                }
+                if (tempx.Count == 1) // There should only be one ICommand
+                {
+                    return tempx.First();
+                }
+                else
+                {
+                    // If there's more than one then the user has to be more specific
+                    return new UnknownCommandParser("Command not specific enough");
+                }
+            }
+            else
+            {
+                return new UnknownCommandParser("Unknown command");
             }
         }
 
@@ -349,7 +339,9 @@ namespace VirtualAssistant.ViewModels
             {
                 handle.Dispose();
                 // Free any other managed objects here.
+                speechRecognitionEngine.Dispose();
                 speechRecognitionEngine = null;
+                speechSynthesizer.Dispose();
                 speechSynthesizer = null;
             }
 

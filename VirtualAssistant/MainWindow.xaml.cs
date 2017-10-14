@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using VirtualAssistant.ViewModels;
@@ -10,19 +11,31 @@ namespace VirtualAssistant
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Thread appThread;
+        private ApplicationViewModel assistant;
+
+
         public MainWindow()
         {
             InitializeComponent();
-            ApplicationViewModel assistant = new ApplicationViewModel();
+
+            assistant = new ApplicationViewModel();
             assistant.ConsoleWrite += this.OnConsoleWrite;
             assistant.CloseApplication += this.OnApplicationExit;
 
             // Convert task to background thread
-            Task.Run(() =>
-            {
-                assistant.Start();
-            });
+            appThread = new Thread(StartAssistant);
+            appThread.IsBackground = true;
+            appThread.SetApartmentState(ApartmentState.STA);
+            appThread.Start();
         }
+
+
+        private void StartAssistant(object args)
+        {
+            assistant.Start();
+        }
+
 
         private void OnConsoleWrite(object sender, ConsoleWriteEventArgs e)
         {
@@ -38,6 +51,9 @@ namespace VirtualAssistant
         {
             Dispatcher.BeginInvoke((Action)(() =>
             {
+                assistant.Dispose();
+                appThread.Abort();
+                appThread = null;
                 this.Close();
             }));
         }

@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using VirtualAssistant.Models;
 
-namespace VirtualAssistant.InternalCommands
+namespace VirtualAssistant.CommandProcessing
 {
-    public interface IInternalCommand
+    public interface ICommandInstance
     {
-        ReturnResult RunCommand(CommandItem commandItem, string command);
+        ReturnResult RunCommand(string commandLine);
     }
 }

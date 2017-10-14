@@ -55,26 +55,31 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="YahooWeather">
+      <HintPath>..\..\YahooWeather\YahooWeather\bin\Debug\YahooWeather.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CommandProcessing\Commands\CloseApplicationCommand.cs" />
+    <Compile Include="CommandProcessing\Commands\DateTimeCommand.cs" />
+    <Compile Include="CommandProcessing\Parsers\CloseApplicationCommandParser.cs" />
+    <Compile Include="CommandProcessing\Parsers\OpenBrowserCommandParser.cs" />
+    <Compile Include="CommandProcessing\Parsers\DateTimeCommandParser.cs" />
+    <Compile Include="CommandProcessing\ICommand.cs" />
+    <Compile Include="CommandProcessing\ICommandInstance.cs" />
+    <Compile Include="CommandProcessing\Commands\OpenBrowserCommand.cs" />
+    <Compile Include="CommandProcessing\Commands\UnknownCommand.cs" />
+    <Compile Include="CommandProcessing\Parsers\UnknownCommandParser.cs" />
+    <Compile Include="CommandProcessing\Commands\WeatherCommand.cs" />
+    <Compile Include="CommandProcessing\Parsers\WeatherCommandParser.cs" />
     <Compile Include="Helpers\DelegateCommand.cs" />
     <Compile Include="Helpers\Enums.cs" />
-    <Compile Include="InternalCommands\GetDate.cs" />
-    <Compile Include="InternalCommands\GetWeather.cs" />
-    <Compile Include="InternalCommands\IInternalCommand.cs" />
     <Compile Include="Models\GenericComboItem.cs" />
     <Compile Include="Models\ReturnResult.cs" />
-    <Compile Include="Models\Weather\Astronomy.cs" />
-    <Compile Include="Models\Weather\Atmosphere.cs" />
-    <Compile Include="Models\Weather\Condition.cs" />
-    <Compile Include="Models\Weather\Forcast.cs" />
-    <Compile Include="Models\Weather\Wind.cs" />
-    <Compile Include="Models\Weather\XmlElement.cs" />
-    <Compile Include="Models\Weather\YahooWeather.cs" />
     <Compile Include="ViewModels\ApplicationViewModel.cs" />
     <Compile Include="Views\ConfigureApp.xaml.cs">
       <DependentUpon>ConfigureApp.xaml</DependentUpon>
@@ -145,6 +150,7 @@
   <ItemGroup>
     <Content Include="SupportLibraries\Itenso.Windows.Controls.ListViewLayout.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

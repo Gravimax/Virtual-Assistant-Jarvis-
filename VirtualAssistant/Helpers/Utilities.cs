@@ -70,6 +70,31 @@ namespace VirtualAssistant
             }
         }
 
+
+        public static string ConvertDay(string day)
+        {
+            switch (day.ToLower())
+            {
+                case "mon":
+                    return "monday";
+                case "tue":
+                    return "tuesday";
+                case "wed":
+                    return "wednesday";
+                case "thu":
+                    return "thursday";
+                case "fri":
+                    return "friday";
+                case "sat":
+                    return "saturday";
+                case "sun":
+                    return "sunday";
+                default:
+                    return "unknown";
+            }
+        }
+
+
         // Serialize to file
         /// <summary>
         /// Takes a serializable object and saves it to an xml file.
