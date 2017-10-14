@@ -1,0 +1,30 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:VirtualAssistant.Resources">
+    <Path
+        x:Key="green_indicator"
+        Fill="Green"
+        Stretch="UniformToFill"
+        StrokeThickness="1">
+        <Path.Data>
+            <EllipseGeometry
+                Center="0,0"
+                RadiusX="1"
+                RadiusY="1" />
+        </Path.Data>
+    </Path>
+
+    <Path
+        x:Key="red_indicator"
+        Fill="Red"
+        Stretch="UniformToFill"
+        StrokeThickness="1">
+        <Path.Data>
+            <EllipseGeometry
+                Center="0,0"
+                RadiusX="1"
+                RadiusY="1" />
+        </Path.Data>
+    </Path>
+</ResourceDictionary>

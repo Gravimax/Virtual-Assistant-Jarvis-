@@ -22,8 +22,6 @@ namespace VirtualAssistant.ViewModels
         List<ICommand> commandList = new List<ICommand>();
         List<string> commandWords = new List<string>();
 
-        string lastCommand = "";
-
         ApplicationConfiguation appConfig;
 
         #endregion
@@ -58,9 +56,11 @@ namespace VirtualAssistant.ViewModels
                 // Create the engine
                 speechRecognitionEngine = CreateSpeechEngine("en-US");
 
-                // Hook to event
+                // Hook to events
+                speechRecognitionEngine.SpeechDetected += new EventHandler<SpeechDetectedEventArgs>(SpeechRecognitionEngine_SpeechDetected);
                 speechRecognitionEngine.SpeechRecognized += new EventHandler<SpeechRecognizedEventArgs>(engine_SpeechRecognized);
-                
+                speechRecognitionEngine.SpeechRecognitionRejected += new EventHandler<SpeechRecognitionRejectedEventArgs>(SpeechRecognitionEngine_SpeechRecognitionRejected);
+
                 // Load dictionary
                 LoadGrammerAndCommands();
 
@@ -78,32 +78,15 @@ namespace VirtualAssistant.ViewModels
 
                 speechSynthesizer.SetOutputToDefaultAudioDevice();
                 speechSynthesizer.SelectVoiceByHints(VoiceGender.Female, VoiceAge.Adult);
-                speechSynthesizer.SpeakStarted += SpeechSynthesizer_SpeakStarted;
-                speechSynthesizer.SpeakProgress += SpeechSynthesizer_SpeakProgress;
-                speechSynthesizer.SpeakCompleted += SpeechSynthesizer_SpeakCompleted;
+
+                speechSynthesizer.SpeakStarted += OnSpeakStarted;
+                speechSynthesizer.SpeakProgress += OnSpeakProgress;
+                speechSynthesizer.SpeakCompleted += OnSpeakCompleted;
             }
             catch (Exception ex)
             {
                 OnConsoleWrite("Voice recognition failed " + ex.Message);
             }
-        }
-
-
-        private void SpeechSynthesizer_SpeakStarted(object sender, SpeakStartedEventArgs e)
-        {
-            // Nothing now
-        }
-
-
-        private void SpeechSynthesizer_SpeakProgress(object sender, SpeakProgressEventArgs e)
-        {
-            // Nothing now
-        }
-
-
-        private void SpeechSynthesizer_SpeakCompleted(object sender, SpeakCompletedEventArgs e)
-        {
-            // Nothing now
         }
 
 
@@ -157,7 +140,6 @@ namespace VirtualAssistant.ViewModels
                 Choices texts = new Choices();
                 texts.Add(appConfig.AssistantName);
 
-
                 List<string> tempCommandWords = new List<string>();
 
                 foreach (var item in commandList)
@@ -187,7 +169,7 @@ namespace VirtualAssistant.ViewModels
                 }
                 else
                 {
-                    // Command is too complex for us to process righy now.
+                    // Command is too complex for us to process right now.
                     OnConsoleWrite("Command too complex.", true);
                     return null;
                 }
@@ -207,7 +189,7 @@ namespace VirtualAssistant.ViewModels
                 if (commandX is CloseApplicationCommandParser)
                 {
                     OnCloseApplication();
-                    return string.Empty;
+                    return null;
                 }
 
                 ICommandInstance instance = commandX.GetCommandInstance();
@@ -224,15 +206,9 @@ namespace VirtualAssistant.ViewModels
             {
                 string message = ex.Message;
                 OnConsoleWrite("Exception processing command: " + command, true);
-                lastCommand = command;
+
                 return "There was an error processing your command";
             }
-        }
-
-
-        private string PreProcessText(string text)
-        {
-            return text;
         }
 
 
@@ -277,18 +253,63 @@ namespace VirtualAssistant.ViewModels
         }
 
 
+        #endregion
+
+
+        public event SpeechDetectedEventHandler SpeechDetected;
+
+        private void SpeechRecognitionEngine_SpeechDetected(object sender, SpeechDetectedEventArgs e)
+        {
+            SpeechDetected?.Invoke(sender, e);
+        }
+
+
+        public event SpeechRecognizedEventHandler SpeechRecognized;
+
         private void engine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             string response = GetKknownTextOrExecute(e.Result.Text);
 
             if (!string.IsNullOrEmpty(response))
             {
+                OnConsoleWrite(response);
                 speechSynthesizer.SpeakAsync(response);
             }
+
+            SpeechRecognized?.Invoke(sender, e);
         }
 
 
-        #endregion
+        public event SpeechRecognitionRejectedEventHandler SpeechRecognitionRejected;
+
+        private void SpeechRecognitionEngine_SpeechRecognitionRejected(object sender, SpeechRecognitionRejectedEventArgs e)
+        {
+            SpeechRecognitionRejected?.Invoke(sender, e);
+        }
+
+
+        public event SpeakStartedEventHandler SpeakStarted;
+
+        private void OnSpeakStarted(object sender, SpeakStartedEventArgs e)
+        {
+            SpeakStarted?.Invoke(sender, e);   
+        }
+
+
+        public event SpeakProgressEventHandler SpeakProgress;
+
+        private void OnSpeakProgress(object sender, SpeakProgressEventArgs e)
+        {
+            SpeakProgress?.Invoke(sender, e);
+        }
+
+
+        public event SpeakCompletedEventHandler SpeakCompleted;
+
+        private void OnSpeakCompleted(object sender, SpeakCompletedEventArgs e)
+        {
+            SpeakCompleted?.Invoke(sender, e);
+        }
 
 
         public event ConsoleWriteEventHandler ConsoleWrite;
@@ -307,7 +328,7 @@ namespace VirtualAssistant.ViewModels
         }
 
 
-        public event ApplicationClose CloseApplication;
+        public event ApplicationCloseEventHandler CloseApplication;
 
         private void OnCloseApplication()
         {
