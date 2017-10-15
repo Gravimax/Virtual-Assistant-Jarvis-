@@ -26,6 +26,19 @@ namespace VirtualAssistant
         }
 
 
+        private bool _isSpeeking;
+
+        public bool IsSpeeking
+        {
+            get { return _isSpeeking; }
+            set
+            {
+                _isSpeeking = value;
+                OnPropertyChanged("IsSpeeking");
+            }
+        }
+
+
         private Thread appThread;
         private ApplicationViewModel assistant;
 
@@ -42,6 +55,8 @@ namespace VirtualAssistant
             assistant.SpeechDetected += this.SpeechRecognitionEngine_SpeechDetected;
             assistant.SpeechRecognized += this.engine_SpeechRecognized;
             assistant.SpeechRecognitionRejected += this.SpeechRecognitionEngine_SpeechRecognitionRejected;
+            assistant.SpeakStarted += this.OnSpeakStarted;
+            assistant.SpeakCompleted += this.OnSpeakCompleted;
 
             // Convert task to background thread
             appThread = new Thread(StartAssistant);
@@ -67,6 +82,36 @@ namespace VirtualAssistant
         }
 
 
+        private void SpeechRecognitionEngine_SpeechDetected(object sender, SpeechDetectedEventArgs e)
+        {
+            IsSpeech = true;
+        }
+
+
+        private void engine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
+        {
+            IsSpeech = false;
+        }
+
+
+        private void SpeechRecognitionEngine_SpeechRecognitionRejected(object sender, SpeechRecognitionRejectedEventArgs e)
+        {
+            IsSpeech = false;
+        }
+
+
+        private void OnSpeakStarted(object sender, SpeakStartedEventArgs e)
+        {
+            IsSpeeking = true;
+        }
+
+
+        private void OnSpeakCompleted(object sender, SpeakCompletedEventArgs e)
+        {
+            IsSpeeking = false;
+        }
+
+
         private void OnApplicationExit(object sender, EventArgs e)
         {
             Dispatcher.BeginInvoke((Action)(() =>
@@ -75,33 +120,6 @@ namespace VirtualAssistant
                 appThread.Abort();
                 appThread = null;
                 this.Close();
-            }));
-        }
-
-
-        private void SpeechRecognitionEngine_SpeechDetected(object sender, SpeechDetectedEventArgs e)
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                IsSpeech = true;
-            }));
-        }
-
-
-        private void engine_SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                IsSpeech = false;
-            }));
-        }
-
-
-        private void SpeechRecognitionEngine_SpeechRecognitionRejected(object sender, SpeechRecognitionRejectedEventArgs e)
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                IsSpeech = false;
             }));
         }
 

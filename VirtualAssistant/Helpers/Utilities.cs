@@ -9,6 +9,10 @@ namespace VirtualAssistant
 {
     public static class Utilities
     {
+        public static string ExceptionLogName = "Exception Log.xml";
+        public static string EventLogName = "Event Log.log";
+
+
         public static string GetTemplatePath()
         {
             return System.IO.Path.Combine(GetCurrentDirectory(), "Templates");
@@ -23,6 +27,19 @@ namespace VirtualAssistant
         {
             return System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         }
+
+
+        public static string GetExceptionLogPath()
+        {
+            return Path.Combine(Utilities.GetCurrentDirectory(), ExceptionLogName); ;
+        }
+
+
+        public static string GetEventLogPath()
+        {
+            return Path.Combine(Utilities.GetCurrentDirectory(), EventLogName); ;
+        }
+
 
         public static bool FileExists(string filePath)
         {

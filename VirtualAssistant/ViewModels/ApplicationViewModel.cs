@@ -39,6 +39,7 @@ namespace VirtualAssistant.ViewModels
             commandList.Add(new DateTimeCommandParser());
             commandList.Add(new OpenBrowserCommandParser());
             commandList.Add(new CloseApplicationCommandParser());
+            commandList.Add(new ConditionParser());
         }
 
         #endregion
@@ -85,6 +86,7 @@ namespace VirtualAssistant.ViewModels
             }
             catch (Exception ex)
             {
+                EventLogging.EventLogger.WriteEventLog("", ex);
                 OnConsoleWrite("Voice recognition failed " + ex.Message);
             }
         }
@@ -154,6 +156,7 @@ namespace VirtualAssistant.ViewModels
             }
             catch (Exception ex)
             {
+                EventLogging.EventLogger.WriteEventLog("", ex);
                 throw ex;
             }
         }
@@ -206,6 +209,7 @@ namespace VirtualAssistant.ViewModels
             {
                 string message = ex.Message;
                 OnConsoleWrite("Exception processing command: " + command, true);
+                EventLogging.EventLogger.WriteEventLog("", ex);
 
                 return "There was an error processing your command";
             }
